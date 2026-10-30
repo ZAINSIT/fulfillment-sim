@@ -179,6 +179,7 @@ def main(seed: int, scale: str) -> None:
                 delivered_ts=delivered.isoformat() if delivered else "",
                 status=status,
                 is_split=len(plans) > 1,
+                is_fallback=plan.dispatch_ts is None,
                 parent_shipment_id="",
                 qty=plan.qty,
                 sku_id=plan.sku_id,
