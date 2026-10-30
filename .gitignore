@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+data/master/*.csv
+data/txn/**/*.csv
+source_manifest.json
+source_manifest_txn.json
+.env
