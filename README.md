@@ -62,6 +62,7 @@ flowchart TD
     GT --> CA
     CT --> R[eval/report.md]
     CA --> R
+```
 
 
 The master layer is generated first, from nothing. The transaction layer
