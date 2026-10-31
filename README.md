@@ -70,7 +70,7 @@ reads the master tables and produces orders, allocations, shipments,
 promises, and tracking events. The decision engine is a pure function:
 given the same master tables and the same order, it produces the same
 shipment plan.
-```
+
 ## Results
 
 
@@ -152,9 +152,9 @@ commands above are the primary, OS-agnostic path. On Windows, if CSV
 writes are slow, the repository should live on a non-synced local
 filesystem (see eval/report.md — "Environment note").
 
-
-## Design decisions
 ```
+## Design decisions
+
 Every decision that shaped the generator, engine, or validator is
 recorded in docs/DECISIONS.md with the alternatives
 that were rejected. The most material:
@@ -169,8 +169,8 @@ D-06	Fallback shipments are flagged, not silently exempted
 D-07	Anomaly suite runs at starter scale only
 D-12	Reproducibility proven by DataFrame checksum, not file bytes
 D-13	Stack is minimal: pandas, numpy, pydantic, faker, stdlib
-```
-Limitations
+
+## Limitations
 
 Stated plainly. These are not oversights; they are scope boundaries.
 
@@ -193,7 +193,7 @@ Fallback orders have no carrier-level SLA. By design (D-03, D-06)
 — no carrier was assigned, so no SLA can be measured. Fulfilment rate
 is measurable; carrier-level metrics are not, for that subset.
 
-Built with
+## Built with
 Designed and built with Claude and DeepSeek as pair-programming
 partners. The data dictionary, the schema, the decision engine, the
 anomaly injector, and the validation harness were written during a
