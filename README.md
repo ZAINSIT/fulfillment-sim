@@ -48,50 +48,20 @@ produce measurable outputs — not just plausible-looking data.
   positives, and the same detector on the clean set returns 0 detections.
 
 ## Architecture
-src/generate.py
-│
-▼
-┌──────────────────────────────┐
-│ data/master/ │
-│ sku.csv │
-│ fulfillment_node.csv │
-│ inventory.csv │
-│ warehouse_capacity.csv │
-│ carrier.csv │
-│ service_level.csv │
-└──────────────┬───────────────┘
-│
-▼
-src/generate_txn.py ──── src/decide.py
-│ (node selection,
-│ cutoff logic,
-│ transit calc)
-▼
-┌──────────────────────────────┐
-│ data/txn/ │
-│ orders.csv │
-│ order_lines.csv │
-│ shipments.csv │
-│ delivery_promises.csv │
-│ tracking_events.csv │
-└──────────────┬───────────────┘
-│
-┌────────────┴────────────┐
-▼ ▼
-scripts/check_txn.py src/anomalies.py
-(invariants §13) (5 labelled scenarios)
-│ │
-│ ▼
-│ data/txn/anomalous/
-│ eval/ground_truth.csv
-│ │
-│ ▼
-│ scripts/check_anomalies.py
-│ (detector: catch rate, FP rate)
-│ │
-└────────────┬────────────┘
-▼
-eval/report.md
+```mermaid
+flowchart TD
+    G[src/generate.py] --> M[data/master/ CSV files]
+    M --> T[src/generate_txn.py]
+    T --> D[src/decide.py<br/>node selection, cutoff logic, transit calc]
+    D --> TXN[data/txn/ CSV files]
+    TXN --> CT[scripts/check_txn.py<br/>invariants]
+    TXN --> A[src/anomalies.py<br/>5 labelled scenarios]
+    A --> ANOM[data/txn/anomalous/ CSV files]
+    A --> GT[eval/ground_truth.csv]
+    ANOM --> CA[scripts/check_anomalies.py<br/>detector: catch rate, FP rate]
+    GT --> CA
+    CT --> R[eval/report.md]
+    CA --> R
 
 
 The master layer is generated first, from nothing. The transaction layer
@@ -99,10 +69,12 @@ reads the master tables and produces orders, allocations, shipments,
 promises, and tracking events. The decision engine is a pure function:
 given the same master tables and the same order, it produces the same
 shipment plan.
-
+```
 ## Results
 
+
 ### Clean set — starter scale (2,000 orders)
+```
 OK  orders=2000 lines=4918 shipments=4925 promises=2000 tracking=24245
 wrote eval/ground_truth.csv (25 rows)
   promise_before_order         5
@@ -112,6 +84,7 @@ wrote eval/ground_truth.csv (25 rows)
   split_status_not_rolled_up   5
 
 wrote data/txn/anomalous/*.csv
+```
 
 
 ### Anomalous set — 5 injected scenarios per type
@@ -178,9 +151,9 @@ commands above are the primary, OS-agnostic path. On Windows, if CSV
 writes are slow, the repository should live on a non-synced local
 filesystem (see eval/report.md — "Environment note").
 
-DESIGN DECISIONS
 
-
+## Design decisions
+```
 Every decision that shaped the generator, engine, or validator is
 recorded in docs/DECISIONS.md with the alternatives
 that were rejected. The most material:
@@ -195,9 +168,9 @@ D-06	Fallback shipments are flagged, not silently exempted
 D-07	Anomaly suite runs at starter scale only
 D-12	Reproducibility proven by DataFrame checksum, not file bytes
 D-13	Stack is minimal: pandas, numpy, pydantic, faker, stdlib
-
-
+```
 Limitations
+
 Stated plainly. These are not oversights; they are scope boundaries.
 
 Synthetic data only. src/generate.py produces the corruption
